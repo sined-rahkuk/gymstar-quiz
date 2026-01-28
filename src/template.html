@@ -1,0 +1,141 @@
+<div class="gq-overlay" id="gq-overlay">
+    <div class="gq-modal">
+        <div class="gq-header">
+            <div class="gq-nav-row">
+                <button class="gq-back-btn" id="gqBackBtn">←</button>
+                <div style="flex-grow:1"></div>
+                <button class="gq-close-btn" id="gqCloseBtn">×</button>
+            </div>
+            
+            <!-- PERSISTENT HEADER CONTENT -->
+            <div class="gq-header-content" id="gqMainHeader">
+                <h1 class="gq-title-main">ZISTI SVOJHO TRÉNERA</h1>
+                <h2 class="gq-title-sub-red">za 1 minútu</h2>
+                <h3 class="gq-subtitle-white">a dostaneš prvý deň tréningu <span class="gq-highlight-underline">ZADARMO</span></h3>
+            </div>
+        </div>
+
+        <div class="gq-content" id="gqSlides">
+            
+            <!-- Step 1: Ja som -->
+            <div class="gq-slide active" data-step="1">
+                <div class="gq-question">Ja som:</div>
+                <div class="gq-options">
+                    <button class="gq-option" data-action="gender" data-value="male">Muž</button>
+                    <button class="gq-option" data-action="gender" data-value="female">Žena</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Goals -->
+            <div class="gq-slide" data-step="2">
+                <div class="gq-question">Čo je tvojím hlavným cieľom?</div>
+                <div class="gq-options" id="gqGoalsOptions">
+                    <button class="gq-option" data-action="goal" data-value="Schudnúť a spevniť postavu">Schudnúť a spevniť postavu</button>
+                    <button class="gq-option" data-action="goal" data-value="Nabrať svalovú hmotu">Nabrať svalovú hmotu</button>
+                    <button class="gq-option" data-action="goal" data-value="Zlepšiť kondíciu">Zlepšiť kondíciu</button>
+                    <button class="gq-option" data-action="goal" data-value="Odstrániť bolesti chrbta">Odstrániť bolesti chrbta</button>
+                    <button class="gq-option gq-cellulitis-option" style="display: none;" data-action="goal" data-value="Odstrániť celulitídu">Odstrániť celulitídu</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="gq-slide" data-step="3">
+                <div class="gq-question">Ako si na tom s cvičením?</div>
+                <div class="gq-options">
+                    <button class="gq-option" data-action="experience" data-value="Som úplný začiatočník">Som úplný začiatočník</button>
+                    <button class="gq-option" data-action="experience" data-value="Cvičím občas">Cvičím občas</button>
+                    <button class="gq-option" data-action="experience" data-value="Pravidelne športujem">Pravidelne športujem</button>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="gq-slide" data-step="4">
+                <div class="gq-question">Koľkokrát v týždni si ochotný prísť na tréning?</div>
+                <div class="gq-options">
+                    <button class="gq-option" data-action="frequency" data-value="Iba raz">Iba raz</button>
+                    <button class="gq-option" data-action="frequency" data-value="2-3x týždenne">2-3x týždenne</button>
+                    <button class="gq-option" data-action="frequency" data-value="4x alebo viac">4x alebo viac</button>
+                    <button class="gq-option" data-action="frequency" data-value="Nie som si zatiaľ istý">Nie som si zatiaľ istý</button>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="gq-slide" data-step="5">
+                <div class="gq-question">Čo ťa najviac motivuje?</div>
+                <div class="gq-options">
+                    <button class="gq-option" data-action="motivation" data-value="Rýchle a viditeľné výsledky">Rýchle a viditeľné výsledky</button>
+                    <button class="gq-option" data-action="motivation" data-value="Dlhodobé zdravie">Dlhodobé zdravie</button>
+                    <button class="gq-option" data-action="motivation" data-value="Zábava a odreagovanie">Zábava a odreagovanie</button>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="gq-slide" data-step="6">
+                <div class="gq-question">Posledná otázka: <span id="gqDynamicReadyText">Si pripravený</span> na zmenu?</div>
+                <div class="gq-options">
+                    <button class="gq-option" data-action="readiness" data-value="Áno, idem do toho naplno!">Áno, idem do toho naplno!</button>
+                    <button class="gq-option" data-action="readiness" data-value="Chcem to skúsiť">Chcem to skúsiť</button>
+                    <button class="gq-option" data-action="readiness" data-value="Potrebujem vedenie">Potrebujem vedenie</button>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="gq-slide" id="gqLoadingSlide">
+                 <div class="gq-loading-slide">
+                     <div class="gq-checkmark-wrapper">
+                         <div class="gq-checkmark-circle"></div>
+                         <div class="gq-spinner-circle" id="gqSpinner"></div>
+                         <div class="gq-checkmark" id="gqCheckmark"></div>
+                     </div>
+                     <div class="gq-loading-text" id="gqLoadText">Vyberáme ideálneho trénera...</div>
+                 </div>
+            </div>
+
+            <!-- Result (Step 7) -->
+            <div class="gq-slide" data-step="7">
+                <div class="gq-result-card">
+                    <div class="gq-match-text">Tvoj ideálny tréner je:</div>
+                    <div class="gq-match-name">Andrea Kavuličová</div>
+                    <p class="gq-desc">
+                        Špecialistka na efektívne tréningy, formovanie postavy, lymfodrenáže a EMS.
+                    </p>
+                    <button class="gq-btn-cta" id="gqShowFormBtn">Zistiť dostupnosť</button>
+                </div>
+            </div>
+
+            <!-- Form (Step 8) -->
+            <div class="gq-slide" data-step="8">
+                <div class="gq-form-card">
+                    <div class="gq-match-name" style="margin-bottom: 20px;">Andrea Kavuličová</div>
+                    
+                    <div class="gq-input-group">
+                        <label class="gq-label">TELEFÓNNE ČÍSLO</label>
+                        <input type="tel" class="gq-input" id="gqPhoneInput" placeholder="+421 9XX XXX XXX">
+                    </div>
+
+                    <div class="gq-input-group">
+                        <label class="gq-label">MOJA SITUÁCIA A PREFERENCIE</label>
+                        <textarea class="gq-input" id="gqNotesInput" placeholder="Napíš o sebe a hlavne kedy ti vyhovuje trénovať (ráno/večer, cez týždeň/víkend). Pomôž nám lepšie pochopiť tvoju situáciu..."></textarea>
+                    </div>
+
+                    <button class="gq-btn-cta" id="gqSubmitBtn">Zistiť dostupnosť</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="gq-progress-container" id="gqProgressBar">
+            <div class="gq-progress-inner">
+                <div class="gq-progress-line-bg"></div>
+                <div class="gq-progress-line-fill" id="gqProgressFill"></div>
+                
+                <div class="gq-bead active" id="bead1"></div>
+                <div class="gq-bead" id="bead2"></div>
+                <div class="gq-bead" id="bead3"></div>
+                <div class="gq-bead" id="bead4"></div>
+                <div class="gq-bead" id="bead5"></div>
+                <div class="gq-bead" id="bead6"></div>
+            </div>
+        </div>
+    </div>
+</div>
