@@ -75,6 +75,16 @@ class GymstarQuiz extends HTMLElement {
                     box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 0 10px rgba(238, 9, 40, 0);
                 }
             }
+            @keyframes gq-pulse-mobile {
+                0%, 100% {
+                    transform: translateX(-50%) scale(1);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 0 0 0 rgba(238, 9, 40, 0.7);
+                }
+                50% {
+                    transform: translateX(-50%) scale(1.05);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 0 10px rgba(238, 9, 40, 0);
+                }
+            }
 
             /* DESKTOP TRIGGER (Fixed Bottom Right) */
             .gq-trigger-desktop {
@@ -111,13 +121,14 @@ class GymstarQuiz extends HTMLElement {
             /* MOBILE TRIGGER (Fixed Bottom - Same as Desktop) */
             .gq-trigger-mobile {
                 position: fixed;
-                bottom: 120px;
-                left: 50%;
-                transform: translateX(-50%);
+                bottom: 160px;
+                left: 30%;
+                transform: none;
                 background-color: ${this.config.primaryColor};
                 color: white;
                 border: none;
-                padding: 12px 20px;
+                padding: 14px 28px;
+                min-width: 280px;
                 border-radius: 50px;
                 font-family: ${this.config.fontFamily};
                 font-weight: 700;
