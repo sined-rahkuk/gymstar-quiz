@@ -10,8 +10,9 @@ class GymstarQuiz extends HTMLElement {
         this.config = {
             primaryColor: '#ee0928',
             fontFamily: "'Poppins', sans-serif",
-            desktopText: "ZISTI SI SVOJHO TRÉNERA",
-            mobileText: "NÁJDI SI TRÉNERA",
+            desktopText: "Správny tréner mení všetko — VYBER SI HO HNEĎ",
+            mobileText: "VYBER SI TRÉNERA",  // Shorter for mobile
+            mobileTextAlt: "Správny tréner\nmení všetko",  // Alternative: 2 lines
             webhookUrl: "https://n8n.srv840889.hstgr.cloud/webhook/gymstar-quiz"
         };
 
@@ -63,6 +64,18 @@ class GymstarQuiz extends HTMLElement {
         if (document.getElementById('gq-trigger-styles')) return;
         
         const css = `
+            /* PULSING ANIMATION */
+            @keyframes gq-pulse {
+                0%, 100% {
+                    transform: scale(1);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 0 0 0 rgba(238, 9, 40, 0.7);
+                }
+                50% {
+                    transform: scale(1.05);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 0 10px rgba(238, 9, 40, 0);
+                }
+            }
+
             /* DESKTOP TRIGGER (Fixed Bottom Right) */
             .gq-trigger-desktop {
                 position: fixed;
@@ -70,55 +83,59 @@ class GymstarQuiz extends HTMLElement {
                 right: 20px;
                 background-color: ${this.config.primaryColor};
                 color: white;
-                padding: 12px 24px;
+                padding: 14px 32px;
                 border-radius: 50px;
                 cursor: pointer;
                 font-family: ${this.config.fontFamily};
-                font-weight: 900;
-                font-size: 16px;
+                font-weight: 700;
+                font-size: 15px;
                 z-index: 9999;
                 border: none;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                 transition: transform 0.2s, background-color 0.2s;
-                text-transform: uppercase;
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                white-space: nowrap;
+                animation: gq-pulse 2.5s ease-in-out infinite;
             }
             .gq-trigger-desktop:hover {
-                transform: scale(1.05);
+                transform: scale(1.08);
                 background-color: #c40510;
+                animation: none;
             }
             @media (max-width: 991px) {
                 .gq-trigger-desktop { display: none !important; }
             }
 
-            /* MOBILE TRIGGER (Menu Item Style) */
-            .gq-trigger-mobile-li {
-                list-style: none;
-                text-align: center;
-                margin: 10px 0;
-                padding: 0;
-                display: block;
-            }
-            .gq-trigger-mobile-btn {
+            /* MOBILE TRIGGER (Fixed Bottom - Same as Desktop) */
+            .gq-trigger-mobile {
+                position: fixed;
+                bottom: 120px;
+                left: 50%;
+                transform: translateX(-50%);
                 background-color: ${this.config.primaryColor};
                 color: white;
                 border: none;
-                padding: 10px 20px;
+                padding: 12px 20px;
                 border-radius: 50px;
                 font-family: ${this.config.fontFamily};
-                font-weight: 900;
-                font-size: 14px;
-                text-transform: uppercase;
+                font-weight: 700;
+                font-size: 13px;
                 cursor: pointer;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                display: inline-block;
-                width: 80%;
-                max-width: 250px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 9998;
+                text-align: center;
+                line-height: 1.3;
+                white-space: pre-line;
+                max-width: calc(100% - 40px);
+                animation: gq-pulse 2.5s ease-in-out infinite;
+            }
+            .gq-trigger-mobile:hover {
+                animation: none;
             }
             @media (min-width: 992px) {
-                .gq-trigger-mobile-li { display: none !important; }
+                .gq-trigger-mobile { display: none !important; }
             }
         `;
         
@@ -178,41 +195,16 @@ class GymstarQuiz extends HTMLElement {
             document.body.appendChild(btn);
         }
 
-        // Mobile Trigger (Menu Item)
+        // Mobile Trigger (Fixed Bottom - Same text as Desktop)
         if (!document.getElementById('gq-trigger-mobile')) {
-            const selectors = [
-                'ul.mod-menu',
-                'nav ul.nav',
-                'nav ul',
-                '.navbar-nav',
-                '.navigation > ul'
-            ];
-
-            let menu = null;
-            for (const sel of selectors) {
-                menu = document.querySelector(sel);
-                if (menu) break;
-            }
-
-            if (menu) {
-                const li = document.createElement('li');
-                li.className = 'gq-trigger-mobile-li';
-                
-                const btn = document.createElement('button');
-                btn.id = 'gq-trigger-mobile';
-                btn.className = 'gq-trigger-mobile-btn';
-                btn.textContent = this.config.mobileText;
-                btn.onclick = (e) => {
-                    e.preventDefault();
-                    this.openQuiz();
-                };
-
-                li.appendChild(btn);
-                menu.appendChild(li);
-                console.log('GymStar Quiz: Mobile trigger injected into menu.');
-            } else {
-                console.warn('GymStar Quiz: Could not find menu.');
-            }
+            const btn = document.createElement('button');
+            btn.id = 'gq-trigger-mobile';
+            btn.className = 'gq-trigger-mobile';
+            // Same text as desktop, with line break for mobile readability
+            btn.innerHTML = "Správny tréner mení všetko<br><strong>VYBER SI HO HNEĎ</strong>";
+            btn.onclick = () => this.openQuiz();
+            document.body.appendChild(btn);
+            console.log('GymStar Quiz: Mobile trigger injected (fixed bottom).');
         }
     }
 
