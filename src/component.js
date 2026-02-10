@@ -58,6 +58,7 @@ class GymstarQuiz extends HTMLElement {
         // Initialize
         this.init();
         this.injectTriggers();
+        this.observeChatWidget();
     }
 
     injectTriggerStyles() {
@@ -141,6 +142,7 @@ class GymstarQuiz extends HTMLElement {
                 white-space: pre-line;
                 max-width: calc(100% - 40px);
                 animation: gq-pulse 2.5s ease-in-out infinite;
+                transition: bottom 0.3s ease;
             }
             .gq-trigger-mobile:hover {
                 animation: none;
@@ -216,6 +218,30 @@ class GymstarQuiz extends HTMLElement {
             btn.onclick = () => this.openQuiz();
             document.body.appendChild(btn);
             console.log('GymStar Quiz: Mobile trigger injected (fixed bottom).');
+        }
+    }
+
+    observeChatWidget() {
+        const tryObserve = () => {
+            const chatEl = document.querySelector('elevenlabs-convai');
+            if (!chatEl || !chatEl.shadowRoot) return false;
+
+            const observer = new MutationObserver(() => {
+                const mobileTrigger = document.getElementById('gq-trigger-mobile');
+                if (!mobileTrigger) return;
+
+                const isOpen = !!chatEl.shadowRoot.querySelector('button[aria-label="Collapse"]');
+                mobileTrigger.style.bottom = isOpen ? '20px' : '160px';
+            });
+
+            observer.observe(chatEl.shadowRoot, { childList: true, subtree: true });
+            return true;
+        };
+
+        if (!tryObserve()) {
+            const interval = setInterval(() => {
+                if (tryObserve()) clearInterval(interval);
+            }, 1000);
         }
     }
 
