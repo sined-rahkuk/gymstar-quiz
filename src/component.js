@@ -99,7 +99,7 @@ class GymstarQuiz extends HTMLElement {
                 font-family: ${this.config.fontFamily};
                 font-weight: 700;
                 font-size: 15px;
-                z-index: 9999;
+                z-index: 999;
                 border: none;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                 transition: transform 0.2s, background-color 0.2s;
@@ -135,7 +135,7 @@ class GymstarQuiz extends HTMLElement {
                 font-size: 13px;
                 cursor: pointer;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                z-index: 9998;
+                z-index: 998;
                 text-align: center;
                 line-height: 1.3;
                 white-space: pre-line;
