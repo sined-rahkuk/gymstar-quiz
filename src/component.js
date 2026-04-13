@@ -1,19 +1,22 @@
 // Web Component implementation
 import templateHTML from './template.html?raw';
 import styles from './styles.css?raw';
+import { matchTrainer } from './trainers.js';
 
 class GymstarQuiz extends HTMLElement {
     constructor() {
         super();
-        
+
         // Configuration
         this.config = {
             primaryColor: '#ee0928',
             fontFamily: "'Poppins', sans-serif",
             desktopText: "Správny tréner mení všetko — VYBER SI HO HNEĎ",
-            mobileText: "VYBER SI TRÉNERA",  // Shorter for mobile
-            mobileTextAlt: "Správny tréner\nmení všetko",  // Alternative: 2 lines
-            webhookUrl: "https://n8n.srv840889.hstgr.cloud/webhook/gymstar-quiz"
+            mobileText: "VYBER SI TRÉNERA",
+            mobileTextAlt: "Správny tréner\nmení všetko",
+            // Windmill HTTP route — replaced n8n webhook 2026-04-13
+            // Server picks trainer email + handles DEV_MODE (route to Denys only)
+            webhookUrl: "https://windmill.srv840889.hstgr.cloud/api/r/gymstar/quiz_submit"
         };
 
         // State
@@ -29,6 +32,7 @@ class GymstarQuiz extends HTMLElement {
                 motivation: '',
                 readiness: ''
             },
+            matchedTrainer: null,
             buttonPulsed: false
         };
     }
@@ -119,28 +123,28 @@ class GymstarQuiz extends HTMLElement {
                 .gq-trigger-desktop { display: none !important; }
             }
 
-            /* MOBILE TRIGGER (Fixed Bottom - Same as Desktop) */
+            /* MOBILE TRIGGER — fixed bottom-RIGHT, same anchor as desktop, sits ABOVE
+               the ElevenLabs convai widget (which lives bottom-right at ~bottom:20px).
+               Offset bumps to 100px when the chat widget collapses, 220px when it expands. */
             .gq-trigger-mobile {
                 position: fixed;
-                bottom: 160px;
-                left: 30%;
-                transform: none;
+                bottom: 100px;
+                right: 16px;
                 background-color: ${this.config.primaryColor};
                 color: white;
                 border: none;
-                padding: 14px 28px;
-                min-width: 280px;
+                padding: 12px 22px;
                 border-radius: 50px;
                 font-family: ${this.config.fontFamily};
                 font-weight: 700;
-                font-size: 13px;
+                font-size: 12px;
                 cursor: pointer;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                 z-index: 998;
                 text-align: center;
-                line-height: 1.3;
-                white-space: pre-line;
-                max-width: calc(100% - 40px);
+                line-height: 1.25;
+                white-space: normal;
+                max-width: calc(100vw - 100px);
                 animation: gq-pulse 2.5s ease-in-out infinite;
                 transition: bottom 0.3s ease;
             }
@@ -208,32 +212,37 @@ class GymstarQuiz extends HTMLElement {
             document.body.appendChild(btn);
         }
 
-        // Mobile Trigger (Fixed Bottom - Same text as Desktop)
+        // Mobile Trigger — compact bottom-right to not collide with ElevenLabs chat widget
         if (!document.getElementById('gq-trigger-mobile')) {
             const btn = document.createElement('button');
             btn.id = 'gq-trigger-mobile';
             btn.className = 'gq-trigger-mobile';
-            // Same text as desktop, with line break for mobile readability
-            btn.innerHTML = "Správny tréner mení všetko<br><strong>VYBER SI HO HNEĎ</strong>";
+            btn.textContent = "VYBER SI TRÉNERA";
             btn.onclick = () => this.openQuiz();
             document.body.appendChild(btn);
-            console.log('GymStar Quiz: Mobile trigger injected (fixed bottom).');
+            console.log('GymStar Quiz: Mobile trigger injected (bottom-right, above ElevenLabs).');
         }
     }
 
     observeChatWidget() {
+        // ElevenLabs convai widget sits bottom-right. Our mobile button stacks ABOVE it.
+        // Collapsed widget ~76px tall → button at bottom:100px. Expanded → push to 520px.
+        const COLLAPSED_BOTTOM = '100px';
+        const EXPANDED_BOTTOM = '520px';
+
         const tryObserve = () => {
             const chatEl = document.querySelector('elevenlabs-convai');
             if (!chatEl || !chatEl.shadowRoot) return false;
 
-            const observer = new MutationObserver(() => {
+            const apply = () => {
                 const mobileTrigger = document.getElementById('gq-trigger-mobile');
                 if (!mobileTrigger) return;
-
                 const isOpen = !!chatEl.shadowRoot.querySelector('button[aria-label="Collapse"]');
-                mobileTrigger.style.bottom = isOpen ? '20px' : '160px';
-            });
+                mobileTrigger.style.bottom = isOpen ? EXPANDED_BOTTOM : COLLAPSED_BOTTOM;
+            };
 
+            apply();
+            const observer = new MutationObserver(apply);
             observer.observe(chatEl.shadowRoot, { childList: true, subtree: true });
             return true;
         };
@@ -372,12 +381,25 @@ class GymstarQuiz extends HTMLElement {
         this.state.buttonPulsed = false;
         this.shadowRoot.getElementById('gqSubmitBtn').classList.remove('entice');
 
+        // Pick trainer DETERMINISTICALLY from answers (no hardcoded Kavuličová).
+        // Scoring runs client-side for instant UI; Windmill re-validates server-side.
+        const trainer = matchTrainer(this.state.answers);
+        this.state.matchedTrainer = trainer;
+        console.log('GymStar Quiz: matched trainer', trainer.name, trainer.scores);
+
+        const nameEl = this.shadowRoot.getElementById('gqTrainerName');
+        const descEl = this.shadowRoot.getElementById('gqTrainerDesc');
+        const formNameEl = this.shadowRoot.getElementById('gqFormTrainerName');
+        if (nameEl) nameEl.textContent = trainer.name;
+        if (descEl) descEl.textContent = trainer.desc;
+        if (formNameEl) formNameEl.textContent = trainer.name;
+
         const step6 = this.shadowRoot.querySelector('.gq-slide[data-step="6"]');
         step6.classList.remove('active');
         step6.classList.add('exit-left');
 
         const loader = this.shadowRoot.getElementById('gqLoadingSlide');
-        
+
         loader.classList.remove('exit-left', 'exit-right');
         void loader.offsetWidth;
         loader.classList.add('active');
@@ -390,7 +412,7 @@ class GymstarQuiz extends HTMLElement {
             this.shadowRoot.getElementById('gqSpinner').style.display = 'none';
             this.shadowRoot.getElementById('gqCheckmark').classList.add('show');
             this.shadowRoot.getElementById('gqLoadText').innerText = "Hotovo!";
-            
+
             setTimeout(() => {
                 loader.classList.remove('active');
                 loader.classList.add('exit-left');
@@ -452,20 +474,24 @@ class GymstarQuiz extends HTMLElement {
     submitForm() {
         const phone = this.shadowRoot.getElementById('gqPhoneInput').value.trim();
         const notes = this.shadowRoot.getElementById('gqNotesInput').value.trim();
-        
+
         if (!phone || phone.length < 9) {
             alert('Prosím, zadajte platné telefónne číslo.');
             return;
         }
-        
+
+        const trainer = this.state.matchedTrainer || matchTrainer(this.state.answers);
+
         const payload = {
             phone: phone,
             notes: notes,
-            trainer: 'Andrea Kavuličová',
+            trainer_key: trainer.key,
+            trainer_name: trainer.name,
             answers: this.state.answers,
+            source: window.location.href,
             timestamp: new Date().toISOString()
         };
-        
+
         console.log('Submitting:', payload);
         
         fetch(this.config.webhookUrl, {
