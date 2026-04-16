@@ -218,7 +218,7 @@ class GymstarQuiz extends HTMLElement {
             const btn = document.createElement('button');
             btn.id = 'gq-trigger-mobile';
             btn.className = 'gq-trigger-mobile';
-            btn.textContent = "MÔJ TRÉNER";
+            btn.textContent = "TRÉNER";
             btn.onclick = () => this.openQuiz();
             document.body.appendChild(btn);
             console.log('GymStar Quiz: Mobile trigger injected (MÔJ TRÉNER, bottom-right).');
