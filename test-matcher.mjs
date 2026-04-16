@@ -31,6 +31,10 @@ for (const c of cases) {
     console.log(`         → ${r.name}   (${sStr})`);
 }
 console.log('\nDistribution:', distribution);
-const allHit = Object.values(distribution).every(v => v > 0);
-console.log(allHit ? '✅ All 4 trainers picked at least once.' : '❌ Some trainer never picked.');
-process.exit(allHit ? 0 : 1);
+// Only Andrea + Dávid are active as of 2026-04-14 (other trainers no email yet).
+const activeHit = distribution.andrea > 0 && distribution.david > 0;
+const noInactiveWinner = distribution.matus === 0 && distribution.martin === 0;
+console.log(activeHit && noInactiveWinner
+    ? '✅ Active trainers (Andrea + Dávid) both picked; inactive never selected.'
+    : '❌ Routing unbalanced or inactive trainer picked.');
+process.exit(activeHit && noInactiveWinner ? 0 : 1);

@@ -123,28 +123,29 @@ class GymstarQuiz extends HTMLElement {
                 .gq-trigger-desktop { display: none !important; }
             }
 
-            /* MOBILE TRIGGER — fixed bottom-RIGHT, same anchor as desktop, sits ABOVE
-               the ElevenLabs convai widget (which lives bottom-right at ~bottom:20px).
-               Offset bumps to 100px when the chat widget collapses, 220px when it expands. */
+            /* MOBILE TRIGGER — compact pill bottom-right. Sits just above the
+               ElevenLabs convai widget collapsed state (~bottom: 20-80px).
+               Text kept short ("MÔJ TRÉNER") so it stays out of convai's chat bubble
+               which can stretch across the viewport on narrow screens. */
             .gq-trigger-mobile {
                 position: fixed;
-                bottom: 100px;
-                right: 16px;
+                bottom: 80px;
+                right: 12px;
                 background-color: ${this.config.primaryColor};
                 color: white;
                 border: none;
-                padding: 12px 22px;
+                padding: 10px 18px;
                 border-radius: 50px;
                 font-family: ${this.config.fontFamily};
-                font-weight: 700;
+                font-weight: 800;
                 font-size: 12px;
+                letter-spacing: 0.5px;
                 cursor: pointer;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                 z-index: 998;
                 text-align: center;
-                line-height: 1.25;
-                white-space: normal;
-                max-width: calc(100vw - 100px);
+                line-height: 1.2;
+                white-space: nowrap;
                 animation: gq-pulse 2.5s ease-in-out infinite;
                 transition: bottom 0.3s ease;
             }
@@ -212,22 +213,23 @@ class GymstarQuiz extends HTMLElement {
             document.body.appendChild(btn);
         }
 
-        // Mobile Trigger — compact bottom-right to not collide with ElevenLabs chat widget
+        // Mobile Trigger — compact short label so it fits next to ElevenLabs widget
         if (!document.getElementById('gq-trigger-mobile')) {
             const btn = document.createElement('button');
             btn.id = 'gq-trigger-mobile';
             btn.className = 'gq-trigger-mobile';
-            btn.textContent = "VYBER SI TRÉNERA";
+            btn.textContent = "MÔJ TRÉNER";
             btn.onclick = () => this.openQuiz();
             document.body.appendChild(btn);
-            console.log('GymStar Quiz: Mobile trigger injected (bottom-right, above ElevenLabs).');
+            console.log('GymStar Quiz: Mobile trigger injected (MÔJ TRÉNER, bottom-right).');
         }
     }
 
     observeChatWidget() {
-        // ElevenLabs convai widget sits bottom-right. Our mobile button stacks ABOVE it.
-        // Collapsed widget ~76px tall → button at bottom:100px. Expanded → push to 520px.
-        const COLLAPSED_BOTTOM = '100px';
+        // ElevenLabs convai widget sits bottom-left and can stretch right when collapsed.
+        // Our button sits bottom-right at 80px — just above the chat bubble but not so high
+        // that it floats in content. When chat expands, lift button to 520px.
+        const COLLAPSED_BOTTOM = '80px';
         const EXPANDED_BOTTOM = '520px';
 
         const tryObserve = () => {

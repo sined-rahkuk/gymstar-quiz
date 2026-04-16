@@ -110,12 +110,14 @@ export function matchTrainer(answers) {
         s.martin += 1;
     }
 
-    // Pick winner. Tie-breaker: david → matus → martin → andrea
-    const order = ['david', 'matus', 'martin', 'andrea'];
-    let winner = order[0];
-    for (const k of order) {
-        if (s[k] > s[winner]) winner = k;
-    }
+    // Active trainers: only Andrea and Dávid responded with emails (2026-04-14).
+    // Matúš/Martin kept in scoring so Dávid inherits men-pool signals, but the
+    // final winner is ONLY one of {andrea, david}. Re-enable the others once
+    // their emails arrive — just extend ACTIVE_TRAINERS below.
+    const menPoolScore = Math.max(s.david, s.matus, s.martin);
+    const winner = s.andrea > menPoolScore ? 'andrea' : 'david';
 
     return { ...TRAINERS[winner], scores: s };
 }
+
+export const ACTIVE_TRAINERS = ['andrea', 'david'];
