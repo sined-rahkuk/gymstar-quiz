@@ -1,4 +1,13 @@
+---
+type: reference
+status: active
+date: 2026-04-22
+tags: [gymstar, quiz, bookmarklets, testing, dev-tools]
+---
+
 # Testing Bookmarklets
+
+*Related: [[projects/gymstar/CONTEXT|GymStar CONTEXT]]*
 
 Drag these to your bookmarks bar for quick testing:
 
